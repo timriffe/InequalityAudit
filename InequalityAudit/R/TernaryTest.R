@@ -1,5 +1,5 @@
 setwd("/home/triffe/git/InequalityAudit/InequalityAudit")
-
+# setwd("/hdir/0/triffe/git/InequalityAudit/InequalityAudit")
 # ggtern is a plotting package that adds on to the ggplot 2 library
 # it would be possible to use this for its plotting functions, but I
 # didn't find just the right thing. It has a nice density plot, but I
@@ -243,4 +243,15 @@ plotTernAxes(cex=.75)
 plotTernBorder(border = gray(.7))
 dev.off()
 
+
+svg("Figures/TernaryMockup.svg")
+par(mai=c(.2,.2,.2,.2), xaxs = "i", yaxs = "i")
+plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
+plotTernPolygons(tris)
+plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
+plotTernContours(Contours, col = "#00000060", lwd = .5)
+plotTernLabels(off=.06)
+plotTernAxes(cex=.75)
+plotTernBorder(border = gray(.7))
+dev.off()
 

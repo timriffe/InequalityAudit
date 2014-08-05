@@ -7,5 +7,7 @@ This repository contains latex and R code for a paper in progress, title TBD, wi
 
 More instructions, and possibly a website, will be made available after publication. Aiming for 100% reproducibility here. Please get in touch if you find this interesting.
 
+Here's a teaser figure (on fake data):
 
+![Ternary Surface Mock-up](Figures/TernaryMockup.svg)
 
