@@ -9,5 +9,5 @@ More instructions, and possibly a website, will be made available after publicat
 
 Here's a teaser figure (on fake data):
 
-![alt tag](Figures/TernaryMockup.svg)
+![alt tag](Figures/TernaryMockup.png)
 

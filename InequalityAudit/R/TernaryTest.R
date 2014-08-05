@@ -244,7 +244,7 @@ plotTernBorder(border = gray(.7))
 dev.off()
 
 
-svg("Figures/TernaryMockup.svg")
+png("Figures/TernaryMockup.png")
 par(mai=c(.2,.2,.2,.2), xaxs = "i", yaxs = "i")
 plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
 plotTernPolygons(tris)
