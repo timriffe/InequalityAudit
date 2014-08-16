@@ -103,7 +103,7 @@ getTernContours <- function(tris, n = 101, levels = pretty(tris$values, 5)){
     # fit loess to data
     mod     <- do.call("loess", c(alist(form = z ~ x * y, data = DatCont)))
     # predict on grid
-    .grid   <- expand.grid(x = seq(0,1,length=101), y = seq(0,1,length=101))
+    .grid   <- expand.grid(x = seq(0,1,length=n), y = seq(0,1,length=n))
     # NA-out cells outside triangle
     fit     <- predict(mod, .grid)
     fit[NAmask] <- NA
@@ -138,26 +138,6 @@ plotTernLabels <- function(labs = c(T = "T", L = "L", R = "R"), off = .04, ...){
             labs, xpd = TRUE, ...)
 }
 
-# TODO coordinate Label placement with clockwise/counterclockwise or centered.
-# TODO implement counterclockwise axes
-plotTernAxes <- function(n = 5, off = .04, tl = .01, clockwise = TRUE, ...){
-    x <- seq(0, 1, by = 1 / n)
-    
-    if (clockwise){
-        # lower axis, refers to left corner variable
-        segments(x,0,x+cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
-        text(x+cos(pi/3)*off,-sin(pi/3)*off,rev(x),xpd=TRUE,srt=-60,...)
-        
-        # right axis, refers to right corner variable
-        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
-        text(x/2+1/2+cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
-        
-        # left axis, refers to top corner variable
-        segments(x/2,x*sqrt(3)/2,x/2-tl,x*sqrt(3)/2,xpd=TRUE)
-        text(x/2-off,x*sqrt(3)/2,x,xpd=TRUE,...)
-        
-    }
-}
 
 # a function to set colors from the RColorBrewer package, given a vector and specified number
 # of colors to space in equal intervals.
@@ -198,8 +178,9 @@ plot(Interpxy, pch = 19, col = cols, axes = FALSE, xlab = "", ylab = "", asp = 1
 
 # tris is a list of useful info for plotting triangles,
 # including cartesian and ternary coordinates for both
-# vertices and midpoints.
-tris      <- getTernTriangles(50)
+# vertices and midpoints. 
+n <- 200 #sum(1:n)
+tris      <- getTernTriangles(n)
 trisGrid  <- getTernTriangles(5)
 
 # add values to the plotting object based on the ternary coords. 
@@ -215,7 +196,7 @@ tris$col            <- val2col(tris$valuesmids, b.pal = "YlGnBu")
 # calculate some contours. This takes some fancy footwork, because the contour functions
 # need cartesian gridded data, which we don't have. We first use a loess smoother on our
 # staggered points to get a cartesian grid, then fit contours.
-Contours            <- getTernContours(tris, n = 101, levels = pretty(tris$valuesvert, 5))
+Contours            <- getTernContours(tris, n = n*2+1, levels = pretty(tris$valuesvert, 5))
 # Contours is a list object, for plotting with plotTernContours()
 
 graphics.off()
@@ -239,8 +220,41 @@ plotTernPolygons(tris)
 plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
 plotTernContours(Contours, col = "#00000060", lwd = .5)
 plotTernLabels(off=.06)
-plotTernAxes(cex=.75)
+plotTernAxes(cex=.75,clockwise=FALSE)
 plotTernBorder(border = gray(.7))
 dev.off()
 
 
+
+# TODO coordinate Label placement with clockwise/counterclockwise or centered.
+# TODO implement counterclockwise axes
+plotTernAxes <- function(n = 5, off = .04, tl = .01, clockwise = TRUE, ...){
+    x <- seq(0, 1, by = 1 / n)
+    
+    if (clockwise){
+        # lower axis, refers to left corner variable
+        segments(x,0,x+cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
+        text(x+cos(pi/3)*off,-sin(pi/3)*off,rev(x),xpd=TRUE,srt=-60,...)
+        
+        # right axis, refers to right corner variable
+        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
+        text(x/2+1/2+cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
+        
+        # left axis, refers to top corner variable
+        segments(x/2,x*sqrt(3)/2,x/2-tl,x*sqrt(3)/2,xpd=TRUE)
+        text(x/2-off,x*sqrt(3)/2,x,xpd=TRUE,...)
+        
+    } else {
+        # lower axis, refers to right corner variable
+        segments(x,0,x-cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
+        text(x-cos(pi/3)*off,-sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
+        
+        # right axis, refers to to corner variable
+        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+tl,rev(x)*sqrt(3)/2,xpd=TRUE)
+        text(x/2+1/2+off,rev(x)*sqrt(3)/2,rev(x),xpd=TRUE,...)
+        
+        # left axis, refers to left corner variable
+        segments(rev(x)/2,rev(x)*sqrt(3)/2,rev(x)/2-cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
+        text(rev(x)/2-cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,srt=-60,xpd=TRUE,...) 
+    }
+}
