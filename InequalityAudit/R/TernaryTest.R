@@ -1,4 +1,4 @@
-setwd("/home/triffe/git/InequalityAudit/InequalityAudit")
+#setwd("/home/triffe/git/InequalityAudit/InequalityAudit")
 # setwd("/hdir/0/triffe/git/InequalityAudit/InequalityAudit")
 # ggtern is a plotting package that adds on to the ggplot 2 library
 # it would be possible to use this for its plotting functions, but I
@@ -152,132 +152,132 @@ val2col <- function(values, b.pal = "YlGnBu", n = 30){
 }
 
 }
-
-# test code:
-Simn       <- 10; sum(1:(Simn+1))    # only 66 combinations required
-Interpn    <- 30; sum(1:(Interpn+1)) # only 496 points needed on spline surface
-
-# these are x, y coordinates
-Simxy               <- getTernGrid(Simn)
-Interpxy            <- getTernGrid(Interpn)
-
-# these are the corresponding ternary coordinates (corner vertices)
-SimTern             <- zapsmall(transform_cart_to_tern(x=Simxy$x,y=Simxy$y))
-InterpTern          <- zapsmall(transform_cart_to_tern(x=Interpxy$x,y=Interpxy$y))
-InterpTern$Value    <- exp(jitter(InterpTern$T)) * jitter(InterpTern$L)^2 * .4 * InterpTern$R
-Interpxy$Value      <- InterpTern$Value
-#rang <- range(pretty(Interpxy$Value))
-cols                <- val2col(Interpxy$Value, b.pal = "YlGnBu", n = 30)
-
-# a circles ternary surface. 
-# Looks more like optical-illusion-causing art than a data graphic...
-plot(Interpxy, pch = 19, col = cols, axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
-
-# would like nice triangular tiles.
-# here we can specify the granularity.
-
-# tris is a list of useful info for plotting triangles,
-# including cartesian and ternary coordinates for both
-# vertices and midpoints. 
-n <- 50 #sum(1:n)
-tris      <- getTernTriangles(n)
-trisGrid  <- getTernTriangles(5)
-
-# add values to the plotting object based on the ternary coords. 
-# Here these are arbitrary functions. Once for midponts and again
-# for vertices. Use midpoints for determining tile color, and vertices
-# for fitting contours.
-tris$valuesvert     <- exp(jitter(tris$ternvert$T)) * jitter(tris$ternvert$L)^2 * .4 * tris$ternvert$R
-tris$valuesmids     <- exp(jitter(tris$ternmid$T)) * jitter(tris$ternmid$L)^2 * .4 * tris$ternmid$R
-
-# values determine colors, added to same plotting list
-tris$col            <- val2col(tris$valuesmids, b.pal = "YlGnBu")
-
-# calculate some contours. This takes some fancy footwork, because the contour functions
-# need cartesian gridded data, which we don't have. We first use a loess smoother on our
-# staggered points to get a cartesian grid, then fit contours.
-Contours            <- getTernContours(tris, n = n*2+1, levels = pretty(tris$valuesvert, 5))
-# Contours is a list object, for plotting with plotTernContours()
-
-graphics.off()
-pdf("Figures/TernaryAestheticsTest1.pdf",width=10,height=3.33)
-# dev.new(width=5,height=5)
-par(mai=c(.2,.2,.2,.2), xaxs = "i", yaxs = "i")
-plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
-plotTernPolygons(tris)
-plotTernBorder(border = gray(.7))
-# currently hard-coded to test case.
-
-plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
-plotTernPolygons(tris)
-plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
-plotTernLabels(off=.06)
-plotTernAxes(cex=.75)
-plotTernBorder(border = gray(.7))
-
-plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
-plotTernPolygons(tris)
-plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
-plotTernContours(Contours, col = "#00000060", lwd = .5)
-plotTernLabels(off=.06)
-plotTernAxes(cex=.75,clockwise=FALSE)
-plotTernBorder(border = gray(.7))
-dev.off()
-
-
-<<<<<<< HEAD
-
-# TODO coordinate Label placement with clockwise/counterclockwise or centered.
-# TODO implement counterclockwise axes
-plotTernAxes <- function(n = 5, off = .04, tl = .01, clockwise = TRUE, ...){
-    x <- seq(0, 1, by = 1 / n)
-    
-    if (clockwise){
-        # lower axis, refers to left corner variable
-        segments(x,0,x+cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
-        text(x+cos(pi/3)*off,-sin(pi/3)*off,rev(x),xpd=TRUE,srt=-60,...)
-        
-        # right axis, refers to right corner variable
-        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
-        text(x/2+1/2+cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
-        
-        # left axis, refers to top corner variable
-        segments(x/2,x*sqrt(3)/2,x/2-tl,x*sqrt(3)/2,xpd=TRUE)
-        text(x/2-off,x*sqrt(3)/2,x,xpd=TRUE,...)
-        
-    } else {
-        # lower axis, refers to right corner variable
-        segments(x,0,x-cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
-        text(x-cos(pi/3)*off,-sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
-        
-        # right axis, refers to to corner variable
-        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+tl,rev(x)*sqrt(3)/2,xpd=TRUE)
-        text(x/2+1/2+off,rev(x)*sqrt(3)/2,rev(x),xpd=TRUE,...)
-        
-        # left axis, refers to left corner variable
-        segments(rev(x)/2,rev(x)*sqrt(3)/2,rev(x)/2-cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
-        text(rev(x)/2-cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,srt=-60,xpd=TRUE,...) 
-    }
-}
-=======
-svg("Figures/TernaryMockup.svg")
-par(mai=c(.4,.4,.4,.4), xaxs = "i", yaxs = "i")
-plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
-plotTernPolygons(tris)
-plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
-plotTernContours(Contours, col = "#00000060", lwd = .5)
-plotTernLabels(off=.06)
-plotTernAxes(cex=.75)
-plotTernBorder(border = gray(.7))
-dev.off()
-png("Figures/TernaryMockup.png",width=700,height=700)
-par(mai=c(.6,.6,.6,.6), xaxs = "i", yaxs = "i")
-plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
-plotTernPolygons(tris)
-plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
-plotTernContours(Contours, col = "#00000060", lwd = .5)
-plotTernLabels(off=.06)
-plotTernAxes(cex=.75)
-plotTernBorder(border = gray(.7))
-dev.off()
->>>>>>> refs/remotes/origin/master
+#
+## test code:
+#Simn       <- 10; sum(1:(Simn+1))    # only 66 combinations required
+#Interpn    <- 30; sum(1:(Interpn+1)) # only 496 points needed on spline surface
+#
+## these are x, y coordinates
+#Simxy               <- getTernGrid(Simn)
+#Interpxy            <- getTernGrid(Interpn)
+#
+## these are the corresponding ternary coordinates (corner vertices)
+#SimTern             <- zapsmall(transform_cart_to_tern(x=Simxy$x,y=Simxy$y))
+#InterpTern          <- zapsmall(transform_cart_to_tern(x=Interpxy$x,y=Interpxy$y))
+#InterpTern$Value    <- exp(jitter(InterpTern$T)) * jitter(InterpTern$L)^2 * .4 * InterpTern$R
+#Interpxy$Value      <- InterpTern$Value
+##rang <- range(pretty(Interpxy$Value))
+#cols                <- val2col(Interpxy$Value, b.pal = "YlGnBu", n = 30)
+#
+## a circles ternary surface. 
+## Looks more like optical-illusion-causing art than a data graphic...
+#plot(Interpxy, pch = 19, col = cols, axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
+#
+## would like nice triangular tiles.
+## here we can specify the granularity.
+#
+## tris is a list of useful info for plotting triangles,
+## including cartesian and ternary coordinates for both
+## vertices and midpoints. 
+#n <- 50 #sum(1:n)
+#tris      <- getTernTriangles(n)
+#trisGrid  <- getTernTriangles(5)
+#
+## add values to the plotting object based on the ternary coords. 
+## Here these are arbitrary functions. Once for midponts and again
+## for vertices. Use midpoints for determining tile color, and vertices
+## for fitting contours.
+#tris$valuesvert     <- exp(jitter(tris$ternvert$T)) * jitter(tris$ternvert$L)^2 * .4 * tris$ternvert$R
+#tris$valuesmids     <- exp(jitter(tris$ternmid$T)) * jitter(tris$ternmid$L)^2 * .4 * tris$ternmid$R
+#
+## values determine colors, added to same plotting list
+#tris$col            <- val2col(tris$valuesmids, b.pal = "YlGnBu")
+#
+## calculate some contours. This takes some fancy footwork, because the contour functions
+## need cartesian gridded data, which we don't have. We first use a loess smoother on our
+## staggered points to get a cartesian grid, then fit contours.
+#Contours            <- getTernContours(tris, n = n*2+1, levels = pretty(tris$valuesvert, 5))
+## Contours is a list object, for plotting with plotTernContours()
+#
+#graphics.off()
+#pdf("Figures/TernaryAestheticsTest1.pdf",width=10,height=3.33)
+## dev.new(width=5,height=5)
+#par(mai=c(.2,.2,.2,.2), xaxs = "i", yaxs = "i")
+#plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
+#plotTernPolygons(tris)
+#plotTernBorder(border = gray(.7))
+## currently hard-coded to test case.
+#
+#plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
+#plotTernPolygons(tris)
+#plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
+#plotTernLabels(off=.06)
+#plotTernAxes(cex=.75)
+#plotTernBorder(border = gray(.7))
+#
+#plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
+#plotTernPolygons(tris)
+#plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
+#plotTernContours(Contours, col = "#00000060", lwd = .5)
+#plotTernLabels(off=.06)
+#plotTernAxes(cex=.75,clockwise=FALSE)
+#plotTernBorder(border = gray(.7))
+#dev.off()
+#
+#
+#<<<<<<< HEAD
+#
+## TODO coordinate Label placement with clockwise/counterclockwise or centered.
+## TODO implement counterclockwise axes
+#plotTernAxes <- function(n = 5, off = .04, tl = .01, clockwise = TRUE, ...){
+#    x <- seq(0, 1, by = 1 / n)
+#    
+#    if (clockwise){
+#        # lower axis, refers to left corner variable
+#        segments(x,0,x+cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
+#        text(x+cos(pi/3)*off,-sin(pi/3)*off,rev(x),xpd=TRUE,srt=-60,...)
+#        
+#        # right axis, refers to right corner variable
+#        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
+#        text(x/2+1/2+cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
+#        
+#        # left axis, refers to top corner variable
+#        segments(x/2,x*sqrt(3)/2,x/2-tl,x*sqrt(3)/2,xpd=TRUE)
+#        text(x/2-off,x*sqrt(3)/2,x,xpd=TRUE,...)
+#        
+#    } else {
+#        # lower axis, refers to right corner variable
+#        segments(x,0,x-cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
+#        text(x-cos(pi/3)*off,-sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
+#        
+#        # right axis, refers to to corner variable
+#        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+tl,rev(x)*sqrt(3)/2,xpd=TRUE)
+#        text(x/2+1/2+off,rev(x)*sqrt(3)/2,rev(x),xpd=TRUE,...)
+#        
+#        # left axis, refers to left corner variable
+#        segments(rev(x)/2,rev(x)*sqrt(3)/2,rev(x)/2-cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
+#        text(rev(x)/2-cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,srt=-60,xpd=TRUE,...) 
+#    }
+#}
+#=======
+#svg("Figures/TernaryMockup.svg")
+#par(mai=c(.4,.4,.4,.4), xaxs = "i", yaxs = "i")
+#plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
+#plotTernPolygons(tris)
+#plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
+#plotTernContours(Contours, col = "#00000060", lwd = .5)
+#plotTernLabels(off=.06)
+#plotTernAxes(cex=.75)
+#plotTernBorder(border = gray(.7))
+#dev.off()
+#png("Figures/TernaryMockup.png",width=700,height=700)
+#par(mai=c(.6,.6,.6,.6), xaxs = "i", yaxs = "i")
+#plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
+#plotTernPolygons(tris)
+#plotTernPolygons(trisGrid,border="#DDDDDD50",lwd=.5)
+#plotTernContours(Contours, col = "#00000060", lwd = .5)
+#plotTernLabels(off=.06)
+#plotTernAxes(cex=.75)
+#plotTernBorder(border = gray(.7))
+#dev.off()
+#>>>>>>> refs/remotes/origin/master

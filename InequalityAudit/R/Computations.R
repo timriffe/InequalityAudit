@@ -3,20 +3,19 @@
 setwd("/home/tim/Dropbox/Graficos (1)")
 
 DHS <- read.csv("DHS_Triangles.csv", sep = ",", header = TRUE, stringsAsFactors = FALSE)
-head(DHS)
-dim(DHS)
-
-w <- c(1,1,1)/3
-w
-names(w) <- c("E","H","S")
-expandw <- function(w){
-	reps <- c(2,2,6)
-	names(reps) <- c("E","H","S")
-	unlist(mapply(function(w.,r.){
-				rep(w.,r.)/r.
-			},w,reps))
-}
-
+#head(DHS)
+#dim(DHS)
+#
+#w <- c(1,1,1)/3
+#w
+#names(w) <- c("E","H","S")
+#expandw <- function(w){
+#	reps <- c(2,2,6)
+#	names(reps) <- c("E","H","S")
+#	unlist(mapply(function(w.,r.){
+#				rep(w.,r.)/r.
+#			},w,reps))
+#}
 
 
 Households <- as.matrix(DHS[,c("E1","E2","H1","H2","S1","S2","S3","S4","S5","S6")]) 
@@ -28,9 +27,10 @@ cgivenw <- function(Households,w){
 }
 
 # get a decent grid of w:
+source("/home/tim/git/InequalityAudit/InequalityAudit/R/TernaryTest.R")
 w_all <- getTernTriangles(n=50)$ternmid
 colnames(w_all) <- c("E","H","S")
-
+w_all <- as.list(data.frame(t(w_all))), it
 # -------
 
 # k 
@@ -83,11 +83,10 @@ w_iteration <- function(w, DHS, k){
 }
 
 library(parallel)
-w
-A <- system.time(w_iteration(w, DHS, k))
-
-cl <- makeCluster(getOption("cl.cores", 4))
-Results <- parRapply(cl = cl, w_all, FUN = w_iteration, DHS=DHS, k=k)
-stopCluster(cl)
-
-
+w_iteration_c <- compiler::cmpfun(w_iteration)
+# could take approx 25 min to run on 4 cores, depends
+system.time(Results <- mclapply(w_all[1:12], FUN = w_iteration, DHS=DHS, k=k, mc.cores= 4))
+Results <- do.call(rbind, Results)
+(9 * 2500/12) / 60
+2250 / 60
+length(w_all)
