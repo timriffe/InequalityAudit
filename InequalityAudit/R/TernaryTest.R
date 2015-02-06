@@ -179,7 +179,7 @@ plot(Interpxy, pch = 19, col = cols, axes = FALSE, xlab = "", ylab = "", asp = 1
 # tris is a list of useful info for plotting triangles,
 # including cartesian and ternary coordinates for both
 # vertices and midpoints. 
-n <- 200 #sum(1:n)
+n <- 50 #sum(1:n)
 tris      <- getTernTriangles(n)
 trisGrid  <- getTernTriangles(5)
 
@@ -201,8 +201,8 @@ Contours            <- getTernContours(tris, n = n*2+1, levels = pretty(tris$val
 
 graphics.off()
 pdf("Figures/TernaryAestheticsTest1.pdf",width=10,height=3.33)
-# dev.new(width=10,height=3.33)
-par(mai=c(.2,.2,.2,.2), xaxs = "i", yaxs = "i", mfrow = c(1,3))
+# dev.new(width=5,height=5)
+par(mai=c(.2,.2,.2,.2), xaxs = "i", yaxs = "i")
 plot(Interpxy,type="n", axes = FALSE, xlab = "", ylab = "", asp = 1, cex = 1.7)
 plotTernPolygons(tris)
 plotTernBorder(border = gray(.7))
