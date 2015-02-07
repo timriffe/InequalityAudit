@@ -18,23 +18,23 @@ DHS <- read.csv("DHS_Triangles.csv", sep = ",", header = TRUE, stringsAsFactors 
 #}
 
 
-Households <- as.matrix(DHS[,c("E1","E2","H1","H2","S1","S2","S3","S4","S5","S6")]) 
+#Households <- as.matrix(DHS[,c("E1","E2","H1","H2","S1","S2","S3","S4","S5","S6")]) 
 
 # get c for each household:
 
-cgivenw <- function(Households,w){
-	colSums(t(Households) * expandw(w))
-}
+#cgivenw <- function(Households,w){
+#	colSums(t(Households) * expandw(w))
+#}
 
 # get a decent grid of w:
 source("/home/tim/git/InequalityAudit/InequalityAudit/R/TernaryTest.R")
-w_all <- getTernTriangles(n=50)$ternmid
+w_all 			<- getTernTriangles(n=50)$ternmid
 colnames(w_all) <- c("E","H","S")
-w_all <- as.list(data.frame(t(w_all))), it
+w_all 			<- as.list(data.frame(t(w_all)))
 # -------
 
-# k 
-k <- seq(0,1,length.out = 17)[-1]
+# k: this will do a 4x4 grid of k
+k 				<- seq(0,1,length.out = 17)[-1]
 
 w_iteration <- function(w, DHS, k){
 	
@@ -83,10 +83,12 @@ w_iteration <- function(w, DHS, k){
 }
 
 library(parallel)
-w_iteration_c <- compiler::cmpfun(w_iteration)
+#w_iteration_c <- compiler::cmpfun(w_iteration) # compiled version doesn't run faster.
 # could take approx 25 min to run on 4 cores, depends
-system.time(Results <- mclapply(w_all[1:12], FUN = w_iteration, DHS=DHS, k=k, mc.cores= 4))
+system.time(Results <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, mc.cores= 4))
 Results <- do.call(rbind, Results)
-(9 * 2500/12) / 60
-2250 / 60
-length(w_all)
+#1520.432 /60
+#length(w_all)
+dim(Results)
+save(Results,file="Results.Rdata")
+save(Results, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results.Rdata")
