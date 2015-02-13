@@ -25,7 +25,7 @@ DHS <- read.csv("DHS_Triangles.csv", sep = ",", header = TRUE, stringsAsFactors 
 #cgivenw <- function(Households,w){
 #	colSums(t(Households) * expandw(w))
 #}
-
+library(data.table)
 # get a decent grid of w:
 source("/home/tim/git/InequalityAudit/InequalityAudit/R/TernaryTest.R")
 w_all 			<- getTernTriangles(n=50)$ternmid
@@ -47,9 +47,9 @@ w_iteration <- function(w, DHS, k){
 	Households          <- DHS[,c("E1","E2","H1","H2","S1","S2","S3","S4","S5","S6")]
 	cvec 				<- colSums(t(Households) * we)
 	
-	AF_Poor 			<- outer(cvec,k,">")
+	AF_Poor 			<- outer(cvec,k,">=")
 	colnames(AF_Poor) 	<- k
-	
+
 # step 6: do poor measures agree?
 	AFCCagree 			<- AF_Poor != DHS$CC_Poor
 	colnames(AFCCagree) <- k
@@ -60,6 +60,7 @@ w_iteration <- function(w, DHS, k){
 # for k-dimensional objects
 # data.table idiom preferred for speed
 	agreeGrouping       <- data.table::data.table(cbind(DHSvars, AFCCagree * DHSvars$pes))
+	
 	applycols 			<- c(as.character(k),"pes")
 	Sumsi     			<- agreeGrouping[,lapply(.SD,sum),by=country,.SDcols = applycols]
 	denom               <- unlist(Sumsi[,ncol(Sumsi),with=FALSE]) # we recycle this...
@@ -70,11 +71,16 @@ w_iteration <- function(w, DHS, k){
 	CCcen        		<- DHS$CC_Poor * cvec * DHS$pes
 	
 	P_AFgrouping 		<- data.table::data.table(cbind(DHSvars, AFcen))
-	Sumsi     	 		<- P_AFgrouping[,lapply(.SD,sum),by=country,.SDcols = as.character(k)]
-	P_AFi        		<- 100 * as.matrix(Sumsi[,as.character(k),with=FALSE]) / denom
-	P_CCi        		<- 100 * tapply(CCcen,DHS$country,sum) / denom
+	P_CCgrouping 		<- data.table::data.table(cbind(DHSvars, CCcen))
+	setnames(P_AFgrouping, c(colnames(DHSvars),k))
+
+	Sumsii     	 		<- P_AFgrouping[,lapply(.SD,sum),by=country,.SDcols = as.character(k)]
+	Sumsiii    	 		<- P_CCgrouping[,lapply(.SD,sum),by=country,.SDcols = "CCcen"]
 	
-# the two summary variables we care about:
+	P_AFi        		<- 100 * as.matrix(Sumsii[,as.character(k),with=FALSE]) / denom
+	P_CCi        		<- 100 * as.matrix(Sumsiii[,"CCcen",with=FALSE]) / denom
+	
+	# the two summary variables we care about:
 	Corr  				<- c(suppressWarnings(cor(P_AFi, P_CCi)))
 	m_out 				<- colMeans(mi)
 
