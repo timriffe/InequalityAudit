@@ -3,11 +3,12 @@
 setwd("/home/tim/Dropbox/Graficos (1)")
 
 DHS <- read.csv("DHS_Triangles.csv", sep = ",", header = TRUE, stringsAsFactors = FALSE)
+head(DHS)
 #head(DHS)
 #dim(DHS)
 #
 #w <- c(1,1,1)/3
-#w
+#k <- .5
 #names(w) <- c("E","H","S")
 #expandw <- function(w){
 #	reps <- c(2,2,6)
@@ -34,9 +35,12 @@ w_all 			<- as.list(data.frame(t(w_all)))
 # -------
 
 # k: this will do a 4x4 grid of k
-k 				<- seq(0,1,length.out = 17)[-1]
-
-w_iteration <- function(w, DHS, k){
+#k 				<- seq(0,1,length.out = 17)[-1]
+head(DHS)
+# do a huge computation (better for centile plots)
+# then pick out the values of k that are useful for ternary plots
+k <- seq(.01,1,by=.01)
+w_iteration <- function(w, DHS, k, CCvar = "CC_Poor"){
 	
 	# 2) expand w to account for nr of dimensions
 	reps                <- c(2, 2, 6)
@@ -45,13 +49,15 @@ w_iteration <- function(w, DHS, k){
 						    rep(w., r.) / r.
 					       }, w, reps))
 	Households          <- DHS[,c("E1","E2","H1","H2","S1","S2","S3","S4","S5","S6")]
-	cvec 				<- colSums(t(Households) * we)
+	cvec 				<- zapsmall(colSums(t(Households) * we))
 	
 	AF_Poor 			<- outer(cvec,k,">=")
 	colnames(AF_Poor) 	<- k
 
 # step 6: do poor measures agree?
-	AFCCagree 			<- AF_Poor != DHS$CC_Poor
+	AFCCagree 			<- AF_Poor != DHS[,CCvar]
+	# one-time test:
+	#AFCCagree 			<- AF_Poor != DHS$Test_poor
 	colnames(AFCCagree) <- k
 # a convenience object:
 	DHSvars             <- DHS[, c("country","pes")]
@@ -68,8 +74,9 @@ w_iteration <- function(w, DHS, k){
 	
 # step 8:
 	AFcen        		<- AF_Poor * cvec * DHS$pes
-	CCcen        		<- DHS$CC_Poor * cvec * DHS$pes
-	
+	CCcen        		<- DHS[,CCvar] * cvec * DHS$pes
+	# a one-time test
+	#CCcen <-  DHS$Test_poor * cvec * DHS$pes
 	P_AFgrouping 		<- data.table::data.table(cbind(DHSvars, AFcen))
 	P_CCgrouping 		<- data.table::data.table(cbind(DHSvars, CCcen))
 	setnames(P_AFgrouping, c(colnames(DHSvars),k))
@@ -79,22 +86,31 @@ w_iteration <- function(w, DHS, k){
 	
 	P_AFi        		<- 100 * as.matrix(Sumsii[,as.character(k),with=FALSE]) / denom
 	P_CCi        		<- 100 * as.matrix(Sumsiii[,"CCcen",with=FALSE]) / denom
-	
+
 	# the two summary variables we care about:
 	Corr  				<- c(suppressWarnings(cor(P_AFi, P_CCi)))
 	m_out 				<- colMeans(mi)
 
 # spit the goodies back
     invisible(cbind(w1 = w[1], w2 = w[2], w3 = w[3], k, Corr = Corr, m_avg = m_out))
-}
+#}
 
 library(parallel)
 #w_iteration_c <- compiler::cmpfun(w_iteration) # compiled version doesn't run faster.
 # could take approx 25 min to run on 4 cores, depends
-system.time(Results <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, mc.cores= 4))
+system.time(Results <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, CCvar == "CC_Poor", mc.cores= 4))
 Results <- do.call(rbind, Results)
 #1520.432 /60
 #length(w_all)
 dim(Results)
 save(Results,file="Results.Rdata")
 save(Results, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results.Rdata")
+
+system.time(Results2 <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, CCvar == "CC_Poor2", mc.cores= 4))
+Results <- do.call(rbind, Results2)
+#1520.432 /60
+#length(w_all)
+dim(Results)
+save(Results2,file="Results.Rdata")
+save(Results2, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results2.Rdata")
+
