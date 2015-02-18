@@ -3,10 +3,10 @@
 
 setwd("/home/tim/git/InequalityAudit/InequalityAudit")
 
-Results <- local(get(load("Data/Results.Rdata")))
+Results <- local(get(load("/home/tim/Dropbox/Graficos (1)/Results.Rdata")))
 
 
-k 				<- seq(0,1,length.out = 17)[-1]
+k <- seq(.01,1,by=.01)
 library(reshape2)
 acast()
 qs <- seq(0,1,by=.1)
@@ -16,8 +16,8 @@ for (i in 1:length(k)){
 }
 
 plot(k,Limits[,"0.5"],type='l', ylim=c(.5,1))
-lines(k,Limits[,"0"])
-lines(k,Limits[,"1"])
+lines(k,Limits[,"0"],col=gray(.5))
+lines(k,Limits[,"1"],col=gray(.5))
 polygon(c(k,rev(k)),c(Limits[,"0.1"],rev(Limits[,"0.9"])),col="#00000020",border=NA)
 polygon(c(k,rev(k)),c(Limits[,"0.2"],rev(Limits[,"0.8"])),col="#00000020",border=NA)
 polygon(c(k,rev(k)),c(Limits[,"0.3"],rev(Limits[,"0.7"])),col="#00000020",border=NA)
@@ -31,8 +31,8 @@ for (i in 1:length(k)){
 }
 
 plot(k,LimitsA[,"0.5"],type='l', ylim=c(0,100))
-lines(k,LimitsA[,"0"])
-lines(k,LimitsA[,"1"])
+lines(k,LimitsA[,"0"],col=gray(.5))
+lines(k,LimitsA[,"1"],col=gray(.5))
 polygon(c(k,rev(k)),c(LimitsA[,"0.1"],rev(LimitsA[,"0.9"])),col="#00000020",border=NA)
 polygon(c(k,rev(k)),c(LimitsA[,"0.2"],rev(LimitsA[,"0.8"])),col="#00000020",border=NA)
 polygon(c(k,rev(k)),c(LimitsA[,"0.3"],rev(LimitsA[,"0.7"])),col="#00000020",border=NA)

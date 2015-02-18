@@ -39,7 +39,7 @@ w_all 			<- as.list(data.frame(t(w_all)))
 head(DHS)
 # do a huge computation (better for centile plots)
 # then pick out the values of k that are useful for ternary plots
-k <- seq(.01,1,by=.01)
+#k <- seq(.01,1,by=.01)
 w_iteration <- function(w, DHS, k, CCvar = "CC_Poor"){
 	
 	# 2) expand w to account for nr of dimensions
