@@ -1,9 +1,11 @@
 
 
 setwd("/home/tim/Dropbox/Graficos (1)")
-
+# work computer:
+#setwd("/hdir/0/triffe/COMMONS/Dropbox/Graficos (1)")
 DHS <- read.csv("DHS_Triangles.csv", sep = ",", header = TRUE, stringsAsFactors = FALSE)
-head(DHS)
+
+
 #head(DHS)
 #dim(DHS)
 #
@@ -23,12 +25,17 @@ head(DHS)
 
 # get c for each household:
 
+
 #cgivenw <- function(Households,w){
 #	colSums(t(Households) * expandw(w))
 #}
 library(data.table)
 # get a decent grid of w:
-source("/home/tim/git/InequalityAudit/InequalityAudit/R/TernaryTest.R")
+# work compouter
+#source("/data/commons/triffe/git/InequalityAudit/InequalityAudit/R/TernaryTest.R")
+
+# change this path!
+source("R/TernaryTest.R")
 w_all 			<- getTernTriangles(n=50)$ternmid
 colnames(w_all) <- c("E","H","S")
 w_all 			<- as.list(data.frame(t(w_all)))
@@ -36,7 +43,7 @@ w_all 			<- as.list(data.frame(t(w_all)))
 
 # k: this will do a 4x4 grid of k
 #k 				<- seq(0,1,length.out = 17)[-1]
-head(DHS)
+
 # do a huge computation (better for centile plots)
 # then pick out the values of k that are useful for ternary plots
 #k <- seq(.01,1,by=.01)
@@ -93,24 +100,30 @@ w_iteration <- function(w, DHS, k, CCvar = "CC_Poor"){
 
 # spit the goodies back
     invisible(cbind(w1 = w[1], w2 = w[2], w3 = w[3], k, Corr = Corr, m_avg = m_out))
-#}
+}
+
+Test <- w_iteration(w=c(1,1,1)/3,DHS, k = .1, CCvar = "CC_Poor")
 
 library(parallel)
+
+RUN <- FALSE
+if (RUN){
 #w_iteration_c <- compiler::cmpfun(w_iteration) # compiled version doesn't run faster.
 # could take approx 25 min to run on 4 cores, depends
-system.time(Results <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, CCvar == "CC_Poor", mc.cores= 4))
+system.time(Results <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, CCvar = "CC_Poor", mc.cores= detectCores()))
 Results <- do.call(rbind, Results)
 #1520.432 /60
 #length(w_all)
 dim(Results)
 save(Results,file="Results.Rdata")
-save(Results, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results.Rdata")
+#save(Results, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results.Rdata")
 
-system.time(Results2 <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, CCvar == "CC_Poor2", mc.cores= 4))
-Results <- do.call(rbind, Results2)
+system.time(Results2 <- mclapply(w_all, FUN = w_iteration, DHS=DHS, k=k, CCvar = "CC_Poor2", mc.cores= detectCores()))
+Results2 <- do.call(rbind, Results2)
 #1520.432 /60
 #length(w_all)
-dim(Results)
-save(Results2,file="Results.Rdata")
-save(Results2, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results2.Rdata")
+dim(Results2)
+save(Results2,file="Results2.Rdata")
+#save(Results2, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results2.Rdata")
+}
 
