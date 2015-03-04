@@ -228,37 +228,42 @@ val2col <- function(values, b.pal = "YlGnBu", n = 30){
 #<<<<<<< HEAD
 #
 ## TODO coordinate Label placement with clockwise/counterclockwise or centered.
-## TODO implement counterclockwise axes
-#plotTernAxes <- function(n = 5, off = .04, tl = .01, clockwise = TRUE, ...){
-#    x <- seq(0, 1, by = 1 / n)
-#    
-#    if (clockwise){
-#        # lower axis, refers to left corner variable
-#        segments(x,0,x+cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
-#        text(x+cos(pi/3)*off,-sin(pi/3)*off,rev(x),xpd=TRUE,srt=-60,...)
-#        
-#        # right axis, refers to right corner variable
-#        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
-#        text(x/2+1/2+cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
-#        
-#        # left axis, refers to top corner variable
-#        segments(x/2,x*sqrt(3)/2,x/2-tl,x*sqrt(3)/2,xpd=TRUE)
-#        text(x/2-off,x*sqrt(3)/2,x,xpd=TRUE,...)
-#        
-#    } else {
-#        # lower axis, refers to right corner variable
-#        segments(x,0,x-cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
-#        text(x-cos(pi/3)*off,-sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
-#        
-#        # right axis, refers to to corner variable
-#        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+tl,rev(x)*sqrt(3)/2,xpd=TRUE)
-#        text(x/2+1/2+off,rev(x)*sqrt(3)/2,rev(x),xpd=TRUE,...)
-#        
-#        # left axis, refers to left corner variable
-#        segments(rev(x)/2,rev(x)*sqrt(3)/2,rev(x)/2-cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
-#        text(rev(x)/2-cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,srt=-60,xpd=TRUE,...) 
-#    }
-#}
+# TODO implement counterclockwise axes
+plotTernAxes <- function(n = 5, off = .04, tl = .01, clockwise = TRUE, labels = FALSE,...){
+    x <- seq(0, 1, by = 1 / n)
+    
+    if (clockwise){
+        # lower axis, refers to left corner variable
+		segments(x,0,x+cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
+		if (labels){
+			text(x+cos(pi/3)*off,-sin(pi/3)*off,rev(x),xpd=TRUE,srt=-60,...)
+		}
+		# right axis, refers to right corner variable
+		segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
+		if (labels){
+			text(x/2+1/2+cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
+		}
+		# left axis, refers to top corner variable
+		segments(x/2,x*sqrt(3)/2,x/2-tl,x*sqrt(3)/2,xpd=TRUE)
+		if (labels){
+			text(x/2-off,x*sqrt(3)/2,x,xpd=TRUE,...)
+		}
+    } else {
+        # lower axis, refers to right corner variable
+        segments(x,0,x-cos(pi/3)*tl,-sin(pi/3)*tl,xpd=TRUE)
+		if (labels){
+        text(x-cos(pi/3)*off,-sin(pi/3)*off,x,xpd=TRUE,srt=60,...)
+	}
+        # right axis, refers to to corner variable
+        segments(x/2+1/2,rev(x)*sqrt(3)/2,x/2+1/2+tl,rev(x)*sqrt(3)/2,xpd=TRUE)
+		if (labels){
+        text(x/2+1/2+off,rev(x)*sqrt(3)/2,rev(x),xpd=TRUE,...)
+        
+        # left axis, refers to left corner variable
+        segments(rev(x)/2,rev(x)*sqrt(3)/2,rev(x)/2-cos(pi/3)*tl,rev(x)*sqrt(3)/2+sin(pi/3)*tl,xpd=TRUE)
+        text(rev(x)/2-cos(pi/3)*off,rev(x)*sqrt(3)/2+sin(pi/3)*off,x,srt=-60,xpd=TRUE,...) 
+    }
+}
 #=======
 #svg("Figures/TernaryMockup.svg")
 #par(mai=c(.4,.4,.4,.4), xaxs = "i", yaxs = "i")
