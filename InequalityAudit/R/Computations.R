@@ -10,7 +10,7 @@ DHS <- read.csv("DHS_Triangles.csv", sep = ",", header = TRUE, stringsAsFactors 
 #dim(DHS)
 #
 #w <- c(1,1,1)/3
-#k <- .5
+#k <- 1/3
 #names(w) <- c("E","H","S")
 #expandw <- function(w){
 #	reps <- c(2,2,6)
@@ -40,14 +40,15 @@ w_all 			<- getTernTriangles(n=50)$ternmid
 colnames(w_all) <- c("E","H","S")
 w_all 			<- as.list(data.frame(t(w_all)))
 # -------
-
+#w <- c(1, 1, 1) / 3
+#k <- 1 / 3
 # k: this will do a 4x4 grid of k
 #k 				<- seq(0,1,length.out = 17)[-1]
 
 # do a huge computation (better for centile plots)
 # then pick out the values of k that are useful for ternary plots
 #k <- seq(.01,1,by=.01)
-w_iteration <- function(w, DHS, k, CCvar = "CC_Poor"){
+w_iteration <- function(w, DHS, k, CCvar = "CC_Poor2"){
 	
 	# 2) expand w to account for nr of dimensions
 	reps                <- c(2, 2, 6)
@@ -93,7 +94,7 @@ w_iteration <- function(w, DHS, k, CCvar = "CC_Poor"){
 	
 	P_AFi        		<- 100 * as.matrix(Sumsii[,as.character(k),with=FALSE]) / denom
 	P_CCi        		<- 100 * as.matrix(Sumsiii[,"CCcen",with=FALSE]) / denom
-
+#write.table(data.frame(Sumsii$country,P_CCi, mi, stringsAsFactors =FALSE),file="copyandpaste.csv",sep=",")
 	# the two summary variables we care about:
 	Corr  				<- c(suppressWarnings(cor(P_AFi, P_CCi)))
 	m_out 				<- colMeans(mi)
@@ -102,7 +103,7 @@ w_iteration <- function(w, DHS, k, CCvar = "CC_Poor"){
     invisible(cbind(w1 = w[1], w2 = w[2], w3 = w[3], k, Corr = Corr, m_avg = m_out))
 }
 
-Test <- w_iteration(w=c(1,1,1)/3,DHS, k = .1, CCvar = "CC_Poor")
+Test <- w_iteration(w=c(1,1,1)/3,DHS, k = .3, CCvar = "CC_Poor")
 
 library(parallel)
 
@@ -127,3 +128,8 @@ save(Results2,file="Results2.Rdata")
 #save(Results2, file = "/home/tim/git/InequalityAudit/InequalityAudit/Data/Results2.Rdata")
 }
 
+Results <- local(get(load("Results.Rdata")))
+Results2 <- local(get(load("Results2.Rdata")))
+head(Results)
+mean(Results[,"m_avg"])
+mean(Results2[,"m_avg"])
