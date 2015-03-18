@@ -8,9 +8,10 @@ Results2 <- local(get(load("/home/tim/Dropbox/Graficos (1)/Results2.Rdata")))
 
 
 k <- sort(unique(Results[,"k"]))
+qs <- seq(0,1,by=.1)
 
-
-plot.centile <- function(Res, k, qs,variable = "Corr", ylim = NULL){
+plot.centile <- function(Res, k, qs,variable = "Corr", ylim = NULL, 
+		main = expression(P[10]^'*'~'Correlation')){
 	Limits <- matrix(nrow = length(k),ncol = length(qs),dimnames=list(k,qs))
 	for (i in 1:length(k)){
 		Limits[i,] <- quantile(Res[Res[,"k"] == k[i],variable],prob=qs,na.rm=TRUE)
@@ -18,7 +19,7 @@ plot.centile <- function(Res, k, qs,variable = "Corr", ylim = NULL){
 	if (is.null(ylim)){
 		ylim <- range(pretty(Limits))
 	}
-	plot(k,Limits[,"0.5"],type='l', ylim=ylim, xlab = "k", ylab = "Corr", main = "CC_Poor Correlation")
+	plot(k,Limits[,"0.5"],type='l', ylim=ylim, xlab = "k", ylab = "Corr", main = main)
 	lines(k,Limits[,"0"],col=gray(.5))
 	lines(k,Limits[,"1"],col=gray(.5))
 	polygon(c(k,rev(k)),c(Limits[,"0.1"],rev(Limits[,"0.9"])),col="#00000020",border=NA)
@@ -27,16 +28,16 @@ plot.centile <- function(Res, k, qs,variable = "Corr", ylim = NULL){
 	polygon(c(k,rev(k)),c(Limits[,"0.4"],rev(Limits[,"0.6"])),col="#00000020",border=NA)
 }
 pdf("/home/tim/Dropbox/Graficos (1)/CentileCCpoorCorr.pdf")
-plot.centile(Results, k , qs, "Corr",ylim=c(.6,1))
+plot.centile(Results, k , qs, "Corr",ylim=c(.6,1), main = expression(P[10]^'*'~'Correlation'))
 dev.off()
 pdf("/home/tim/Dropbox/Graficos (1)/CentileCCpoorm_avg.pdf")
-plot.centile(Results, k , qs, "m_avg", ylim = c(0,80))
+plot.centile(Results, k , qs, "m_avg", ylim = c(0,80), main = expression(bar(m)~P[10]^'*'~'Correlation'))
 dev.off()
 pdf("/home/tim/Dropbox/Graficos (1)/CentileCCpoor2Corr.pdf")
-plot.centile(Results2, k , qs, "Corr",ylim=c(.6,1))
+plot.centile(Results2, k , qs, "Corr",ylim=c(.6,1), main = expression(Q[10]^'*'~'Correlation'))
 dev.off()
 pdf("/home/tim/Dropbox/Graficos (1)/CentileCCpoor2m_avg.pdf")
-plot.centile(Results2, k , qs, "m_avg",ylim=c(0,80))
+plot.centile(Results2, k , qs, "m_avg",ylim=c(0,80), main = expression(bar(m)~Q[10]^'*'~'Correlation'))
 dev.off()
 qs <- seq(0,1,by=.1)
 Limits <- matrix(nrow = length(k),ncol = length(qs),dimnames=list(k,qs))

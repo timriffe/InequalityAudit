@@ -61,8 +61,9 @@ pp <- layout(mat=matrix(c(1,2,2,2,2,2,1,3,4,5,6,7,1,8,9,10,11,12,1,13,13,13,13,1
 #layout.show(pp)
 par(xaxs="i",yaxs="i",oma=c(0,0,0,0), mar=c(0,0,0,0))
 plot(NULL, type= "n", xlim=c(0,1),ylim=c(0,1), axes = FALSE, xlab="",ylab="")
-text(c(.25,.6),c(.5,.5),c("CC Poor", "CC Poor II"),cex=1.5)
-
+#text(c(.25,.6),c(.5,.5),c("CC Poor", "CC Poor II"),cex=1.5)
+text(.27,.5,expression('P'[10]^'*'),cex=1.5)
+text(.6,.5,expression('Q'[10]^'*'),cex=1.5)
 
 plot(NULL, type= "n", xlim=c(0,1),ylim=c(0,5), axes = FALSE, xlab="",ylab="")
 text(.5,0:4+.7,paste0("k = ",rev(pk)),cex=1.5)
@@ -84,7 +85,7 @@ plot(NULL, type="n", xlim = c(0,1),ylim=c(0,1), xlab = "", ylab = "", axes = FAL
 yat <- seq(.3,.7,length=9)
 xat <- c(.2,.5)
 x <- seq(0, 1.0, 0.1); y <- c(0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1)
-cbind(x, sprintf("%a", x), sprintf("%a", y))
+#cbind(x, sprintf("%a", x), sprintf("%a", y))
 rect(xat[1],yat[-9],xat[2],yat[-1],col = legcols,border=NA)
 rect(xat[1],min(yat),xat[2],max(yat),border=gray(.4))
 text(xat[2],yat,sprintf("%.2f",legbrks),pos=4)
@@ -109,7 +110,8 @@ pp <- layout(mat=matrix(c(1,2,2,2,2,2,1,3,4,5,6,7,1,8,9,10,11,12,1,13,13,13,13,1
 #layout.show(pp)
 par(xaxs="i",yaxs="i",oma=c(0,0,0,0), mar=c(0,0,0,0))
 plot(NULL, type= "n", xlim=c(0,1),ylim=c(0,1), axes = FALSE, xlab="",ylab="")
-text(c(.25,.6),c(.5,.5),c("CC Poor", "CC Poor II"),cex=1.5)
+text(.27,.5,expression('P'[10]^'*'),cex=1.5)
+text(.6,.5,expression('Q'[10]^'*'),cex=1.5)
 
 
 plot(NULL, type= "n", xlim=c(0,1),ylim=c(0,5), axes = FALSE, xlab="",ylab="")
