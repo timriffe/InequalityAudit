@@ -8,6 +8,7 @@ allk <- sort(unique(Results[,"k"]))
 
 pk <- allk[c(20,40,60,80,100)]
 
+
 source("R/TernaryTest.R")
 
 rownames(Results) <- NULL

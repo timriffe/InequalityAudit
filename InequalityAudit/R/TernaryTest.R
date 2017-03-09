@@ -8,7 +8,31 @@
 # ternary spaces. Useful in various instances in my custom functions.
 
 # install.packages("ggtern")
-library(ggtern)
+#devtools::install_github("nicholasehamilton/ggtern")
+#library(ggtern)
+# this sources R/ternutils inside. Important to have wd set
+# copied from ggtern, which isn't loading it properly at the moment
+transform_cart_to_tern <- function(x,y,data=data.frame(x=x,y=y),...,Tlim=c(0,1),Llim=c(0,1),Rlim=c(0,1)){
+	tryCatch({
+				if(length(which(c("x","y") %in% colnames(data))) < 2) stop("data must contain columns x and y")
+				out.R = data$x - data$y*tan(pi/6)
+				out.T = data$y/(tan(pi/3)*0.5)
+				out.L = 1 - out.R - out.T
+				
+				#Undo Scale
+				.adj.rev <- function(input,lim){
+					input*(abs(diff(lim))) + min(lim)
+				}
+				out.T = .adj.rev(out.T,Tlim)
+				out.L = .adj.rev(out.L,Llim)
+				out.R = .adj.rev(out.R,Rlim)
+				
+				data.frame(T=out.T,L=out.L,R=out.R)
+			},error=function(e){
+				return(data)
+			})
+}
+#source("R/ternutils.R")
 # equivalents:
 #transform_cart_to_tern(x=0,y=0)
 #transform_tern_to_cart(0,1,0)
